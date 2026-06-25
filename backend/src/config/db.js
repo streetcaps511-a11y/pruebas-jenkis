@@ -5,39 +5,20 @@ import toml from 'toml';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
-// Necesario para __dirname en ES Modules
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cargar variables de entorno
 dotenv.config();
 
-// 1. Cargar la configuración desde config.toml
 const configPath = path.join(__dirname, '../../config.toml');
 const config = toml.parse(fs.readFileSync(configPath, 'utf-8')).database;
 
-// 2. Configurar SSL optimizado para Render y Aiven
-let sslConfig = false;
+const sslConfig = {
+    require: true,
+    rejectUnauthorized: false
+};
 
-if (config.ssl) {
-    const caPath = path.join(__dirname, '../../', config.ssl_ca_path || '');
-    if (config.ssl_ca_path && fs.existsSync(caPath)) {
-        // Si el archivo físico existe en el proyecto, lo lee y lo usa
-        sslConfig = {
-            rejectUnauthorized: true,
-            ca: fs.readFileSync(caPath).toString(),
-        };
-    } else {
-        // Si el archivo físico NO existe (caso Render), fuerza el SSL estándar requerido por Aiven
-        sslConfig = {
-            rejectUnauthorized: false,
-            require: true,
-            rejectUnauthorized: false
-        };
-    }
-}
-
-// 3. Crear la instancia de Sequelize
 const sequelizeOptions = {
     dialect: 'postgres',
     logging: false,
@@ -64,7 +45,15 @@ const sequelizeOptions = {
 };
 
 export const sequelize = process.env.DATABASE_URL
-    ? new Sequelize(process.env.DATABASE_URL, sequelizeOptions)
+    ? new Sequelize(process.env.DATABASE_URL, {
+        ...sequelizeOptions,
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
+        }
+    })
     : new Sequelize(
         config.database,
         config.username,
@@ -76,9 +65,6 @@ export const sequelize = process.env.DATABASE_URL
         }
     );
 
-
-
-// 4. Función connectDB para compatibilidad con server.js
 export async function connectDB() {
     let retries = 5;
     while (retries > 0) {
@@ -93,7 +79,6 @@ export async function connectDB() {
                 console.log('💡 Verifica tu conexión a Internet o los datos en config.toml.');
                 throw error;
             }
-            // Esperar 3 segundos antes de intentar de nuevo
             await new Promise(res => setTimeout(res, 3000));
         }
     }
