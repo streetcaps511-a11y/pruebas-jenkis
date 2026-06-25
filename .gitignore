@@ -64,3 +64,11 @@ backend/src/scripts/inspect-and-delete-anuladas.js
 
 # Uploaded files
 backend/public/uploads/
+
+# Playwright
+/playwright.config.js
+/playwright-report/
+/test-results/
+/e2e/
+/frontend/tests/
+

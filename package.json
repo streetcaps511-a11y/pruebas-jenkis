@@ -9,5 +9,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
+  },
+  "dependencies": {
+    "react-scripts": "^5.0.1"
+  }
 }
