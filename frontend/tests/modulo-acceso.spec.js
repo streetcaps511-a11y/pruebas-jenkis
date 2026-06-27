@@ -8,7 +8,7 @@ test.describe('Módulo Acceso', () => {
         await page.waitForLoadState('networkidle');
 
         // CA_17_02: Credenciales inválidas
-        await page.fill('input[type="email"]', 'usuario.invalido@test.com');
+        await page.fill('input[type="text"]', 'usuario.invalido@test.com');
         await page.fill('input[type="password"]', 'ClaveIncorrecta123');
         await page.click('button[type="submit"]');
 
@@ -17,8 +17,8 @@ test.describe('Módulo Acceso', () => {
         await expect(page.locator('.alert-container, .error-message')).toContainText(/error|incorrect|invalid/i);
 
         // CA_17_01: Credenciales válidas (Asumiendo admin predeterminado para la prueba E2E)
-        await page.fill('input[type="email"]', 'duvan@gmail.com');
-        await page.fill('input[type="password"]', 'Duvan12345');
+        await page.fill('input[type="text"]', 'duvann1991@gmail.com');
+        await page.fill('input[type="password"]', 'AdminGM2024!Secure');
         await page.click('button[type="submit"]');
 
         // Verificar redirección al dashboard/admin
@@ -29,8 +29,8 @@ test.describe('Módulo Acceso', () => {
     test('HU_18: Cerrar sesión', async ({ page }) => {
         // Pre-condición: Iniciar sesión primero
         await page.goto('http://localhost:5173/login');
-        await page.fill('input[type="email"]', 'duvan@gmail.com');
-        await page.fill('input[type="password"]', 'Duvan12345');
+        await page.fill('input[type="text"]', 'duvann1991@gmail.com');
+        await page.fill('input[type="password"]', 'AdminGM2024!Secure');
         await page.click('button[type="submit"]');
         await page.waitForURL('**/admin**');
 
@@ -60,17 +60,17 @@ test.describe('Módulo Acceso', () => {
         await page.goto('http://localhost:5173/login');
         
         // CA_19_01: Enlace de recuperación visible y clickeable
-        const forgotPwdLink = page.locator('a:has-text("Olvidaste"), a:has-text("Recuperar")');
+        const forgotPwdLink = page.locator('button:has-text("recuperar tu acceso")');
         await expect(forgotPwdLink).toBeVisible();
         await forgotPwdLink.click();
 
         // Verificar que estamos en la pantalla de recuperación
-        await expect(page.locator('text=/Recuperar|Restablecer/i')).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('text=/Recuperar|Restablecer|instrucciones/i').first()).toBeVisible({ timeout: 5000 });
 
         // CA_19_02: Ingresar correo y enviar
-        const emailInput = page.locator('input[type="email"]');
+        const emailInput = page.locator('input[type="email"], input[type="text"]');
         await expect(emailInput).toBeVisible();
-        await emailInput.fill('duvan@gmail.com');
+        await emailInput.fill('duvann1991@gmail.com');
         
         // Clic en enviar/recuperar
         await page.locator('button[type="submit"]').click();
