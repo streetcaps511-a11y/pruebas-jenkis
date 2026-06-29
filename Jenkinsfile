@@ -8,11 +8,15 @@ pipeline {
                 }
             }
         }
+        stage('Install Playwright') {
+            steps {
+                bat 'npm install'
+                bat 'npx playwright install --with-deps chromium'
+            }
+        }
         stage('Test') {
             steps {
-                dir('frontend') {
-                    bat 'npm test'
-                }
+                bat 'npx playwright test --project=chromium'
             }
         }
         stage('Build') {
@@ -21,6 +25,18 @@ pipeline {
                     bat 'npm run build'
                 }
             }
+        }
+    }
+    post {
+        always {
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'playwright-report',
+                reportFiles: 'index.html',
+                reportName: 'Playwright Report'
+            ])
         }
     }
 }
