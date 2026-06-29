@@ -1,0 +1,119 @@
+================================================================================
+GUÍA DE CONFIGURACIÓN Y EJECUCIÓN: JENKINS & PLAYWRIGHT QA AUTOMATION
+================================================================================
+
+Este documento contiene las instrucciones detalladas para configurar Jenkins,
+Playwright y la ejecución de cada uno de los módulos de prueba del proyecto.
+
+--------------------------------------------------------------------------------
+1. CONFIGURACIÓN DE PLAYWRIGHT (Local)
+--------------------------------------------------------------------------------
+Para configurar y ejecutar las pruebas de Playwright localmente en tu máquina:
+
+1. Instalar las dependencias en la raíz del proyecto (donde está Playwright):
+   > npm install
+
+2. Instalar el navegador Chromium requerido por las pruebas:
+   > npx playwright install --with-deps chromium
+
+3. Instalar dependencias del Backend y Frontend de forma independiente:
+   > cd backend && npm install
+   > cd ../frontend && npm install
+
+4. Asegurarse de tener el backend corriendo localmente (puerto predeterminado)
+   y crear un archivo `.env` en la carpeta `backend` con las credenciales
+   correspondientes a la base de datos PostgreSQL.
+
+--------------------------------------------------------------------------------
+2. COMANDOS DE EJECUCIÓN DE PRUEBAS (Playwright)
+--------------------------------------------------------------------------------
+Ejecuta estos comandos en la raíz del proyecto:
+
+* Ejecutar TODAS las pruebas (en modo headless / segundo plano):
+  > npx playwright test --project=chromium
+
+* Ejecutar TODAS las pruebas con interfaz gráfica de Playwright (Modo UI):
+  > npx playwright test --ui
+
+* Ejecutar un módulo de pruebas específico (ejemplo: pedidos):
+  > npx playwright test modulo-pedidos --project=chromium
+
+* Ejecutar un módulo específico con depuración visual (modo headed):
+  > npx playwright test modulo-pedidos --project=chromium --headed
+
+* Mostrar el reporte HTML generado después de una ejecución:
+  > npx playwright show-report
+
+Lista de módulos disponibles para ejecutar individualmente:
+- Acceso:        > npx playwright test modulo-acceso --project=chromium
+- Categorías:    > npx playwright test modulo-categorias --project=chromium
+- Clientes:      > npx playwright test modulo-clientes --project=chromium
+- Compras:       > npx playwright test modulo-compras --project=chromium
+- Dashboard:     > npx playwright test modulo-dashboard --project=chromium
+- Devoluciones:  > npx playwright test modulo-devoluciones --project=chromium
+- Pedidos:       > npx playwright test modulo-pedidos --project=chromium
+- Perfil:        > npx playwright test modulo-perfil --project=chromium
+- Productos:     > npx playwright test modulo-productos --project=chromium
+- Proveedores:   > npx playwright test modulo-proveedores --project=chromium
+- Roles:         > npx playwright test modulo-roles --project=chromium
+- Usuarios:      > npx playwright test modulo-usuarios --project=chromium
+- Ventas:        > npx playwright test modulo-ventas --project=chromium
+
+--------------------------------------------------------------------------------
+3. CONFIGURACIÓN EN JENKINS
+--------------------------------------------------------------------------------
+Para configurar el pipeline de automatización en Jenkins en un entorno Windows:
+
+Requisitos Previos en Jenkins:
+1. Instalar los plugins necesarios:
+   - "HTML Publisher Plugin" (para visualizar los reportes de Playwright).
+   - "Pipeline Utility Steps" (opcional, para utilidades de pipeline).
+   - "NodeJS Plugin" (para configurar Node.js en las herramientas globales si no
+     se define directamente en el entorno).
+
+2. Registrar las credenciales del Backend:
+   - Ir a: Administrar Jenkins -> Credentials (Credenciales) -> System -> Global credentials.
+   - Añadir una nueva credencial de tipo: "Secret file" (Archivo secreto).
+   - Subir el archivo `.env` del backend que contiene la configuración de la base
+     de datos de pruebas.
+   - ID de la credencial: Debe ser exactamente:
+     `e1b4792d-474c-47d1-b018-64270bb40399`
+     (Este es el ID que lee el Jenkinsfile en la etapa de Test).
+
+Creación del Pipeline (Job):
+1. Crear una nueva tarea ("New Item") -> Seleccionar "Pipeline" -> Nombre: `pruebas-jenkins-qa`.
+2. En la sección "Pipeline":
+   - Definition: Seleccionar "Pipeline script from SCM".
+   - SCM: Seleccionar "Git".
+   - Repository URL: `https://github.com/streetcaps511-a11y/pruebas-jenkis.git`
+   - Credentials: Tus credenciales de acceso a GitHub (si es privado).
+   - Branch Specifier: `*/develop` o `*/main` (según la rama que desees probar).
+   - Script Path: `Jenkinsfile`
+3. Guardar y hacer clic en "Build Now" (Construir ahora).
+
+Explicación del Jenkinsfile del Proyecto:
+* Etapa 1 (Install Frontend): Instala las dependencias del frontend.
+* Etapa 2 (Install Backend): Instala las dependencias del backend.
+* Etapa 3 (Install Playwright): Instala `@playwright/test` en la raíz e instala
+  el navegador Chromium.
+* Etapa 4 (Test):
+  - Descarga el archivo de credenciales `.env` y lo copia a `backend\.env`.
+  - Levanta el Backend en segundo plano redirigiendo los logs a `backend.log`.
+  - Espera 15 segundos para asegurar que el backend levantó por completo.
+  - Ejecuta las pruebas automatizadas de Playwright en Chromium.
+* Etapa 5 (Build): Genera la compilación de producción del frontend.
+* Sección Post (Always):
+  - Utiliza `publishHTML` para publicar el reporte interactivo de Playwright en
+    Jenkins dentro de la ruta del workspace `${WORKSPACE}/playwright-report`
+    usando el archivo `index.html`.
+
+--------------------------------------------------------------------------------
+4. SOLUCIÓN DE PROBLEMAS COMUNES EN JENKINS
+--------------------------------------------------------------------------------
+* Error de CSS/Javascript bloqueado al ver el Reporte HTML de Playwright:
+  Jenkins bloquea la visualización del reporte por políticas de seguridad (CSP).
+  Para solucionarlo de forma temporal, ve a:
+  Administrar Jenkins -> Script Console (Consola de scripts) y ejecuta:
+  > System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
+  Luego de ejecutarlo, vuelve a lanzar la construcción para ver el reporte con estilos.
+================================================================================
