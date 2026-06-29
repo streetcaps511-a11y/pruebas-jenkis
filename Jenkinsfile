@@ -1,9 +1,16 @@
 pipeline {
     agent any
     stages {
-        stage('Install') {
+        stage('Install Frontend') {
             steps {
                 dir('frontend') {
+                    bat 'npm install'
+                }
+            }
+        }
+        stage('Install Backend') {
+            steps {
+                dir('backend') {
                     bat 'npm install'
                 }
             }
@@ -16,7 +23,11 @@ pipeline {
         }
         stage('Test') {
             steps {
-                bat 'npx playwright test --project=chromium'
+                bat '''
+                    start /B cmd /c "cd backend && npm start"
+                    timeout /t 10
+                    npx playwright test --project=chromium
+                '''
             }
         }
         stage('Build') {
