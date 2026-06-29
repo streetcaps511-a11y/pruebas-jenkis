@@ -167,7 +167,6 @@ test.describe.serial('Módulo Ventas/Pedidos E2E Flow', () => {
 
             // El CustomConfirm de auth tiene título "Atención" y botón "Iniciar sesión"
             // Puede también redirigir directamente a /login
-            const authRedirected = customerPage.url().includes('/login');
             const authModal = customerPage.locator(
                 'button:has-text("Iniciar sesión"), button:has-text("Iniciar Sesión")'
             ).first();
