@@ -180,11 +180,6 @@ const filteredProductos = useMemo(() => {
       newErrors.precioVenta = "El precio de venta debe ser mayor a 0";
     } else if (formData.enOfertaVenta && parseFloat(formData.precioOferta) <= 0) {
       newErrors.precioOferta = "El precio de oferta debe ser mayor a 0";
-    } else {
-      const tallasValidas = tallasStock.filter(t => t.talla?.trim() !== '');
-      if (tallasValidas.length === 0) {
-        newErrors._general = "Debe agregar al menos una talla";
-      }
     }
 
     setErrors(newErrors);

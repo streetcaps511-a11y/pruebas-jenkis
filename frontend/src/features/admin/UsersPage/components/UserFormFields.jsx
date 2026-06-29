@@ -40,13 +40,7 @@ const UserFormFields = ({
       if (fieldName === 'rol') {
 
         fieldOptions = availableRoles
-          .filter(r => {
-            const isAdminRole = (r.id === 1 || r.id === "1" || (r.name || r.Nombre || "").toLowerCase() === 'administrador');
-            if (isAdminRole) {
-            return editingUser && isAdministrador(editingUser);
-            }
-            return true;
-          })
+          .filter(() => true)
           .map(r => ({
             value: r.id, 
             label: (r.name || r.Nombre || "").charAt(0).toUpperCase() + (r.name || r.Nombre || "").slice(1).toLowerCase()

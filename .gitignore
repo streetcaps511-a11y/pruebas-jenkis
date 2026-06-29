@@ -66,8 +66,8 @@ backend/src/scripts/inspect-and-delete-anuladas.js
 backend/public/uploads/
 
 # Playwright – reportes y resultados temporales (NO subir al repo)
-/playwright-report/
-/test-results/
+playwright-report/
+test-results/
 
 # Playwright – estado de autenticación (tokens de sesión, NO subir)
 .auth/

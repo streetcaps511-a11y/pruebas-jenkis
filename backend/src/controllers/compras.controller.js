@@ -263,12 +263,14 @@ if (fecha) {
                 }
             }
 
+            const totalCompraValido = validarPrecio(totalCompra, 'Total Compra');
+
             const nuevaCompra = await Compra.create({
-                idProveedor,
+                idProveedor: idProveedor || null,
                 nfactura,
                 fecha: fechaValida,
                 fechaRegistro: new Date(),
-                total: totalCompra,
+                total: totalCompraValido,
                 metodoPago: metodoPago || 'Efectivo',
                 estado: 'Completada'
             }, { transaction });

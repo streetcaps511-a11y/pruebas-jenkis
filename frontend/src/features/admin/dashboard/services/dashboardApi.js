@@ -11,7 +11,8 @@ import { getSales } from '../../VentasPage/services/ventasApi';
 import { 
   getCompras, 
   getClientes,
-  getDashboardStats 
+  getDashboardStats,
+  getDevoluciones
 } from '../../../shared/services/adminApi';
 import { NitroCache } from '../../../shared/utils/NitroCache';
 
@@ -64,6 +65,21 @@ export const fetchDashboardClientes = async () => {
   }
 };
 
+export const fetchDashboardDevoluciones = async () => {
+  try {
+    const response = await getDevoluciones();
+    let data = [];
+    if (Array.isArray(response?.data?.data)) data = response.data.data;
+    else if (Array.isArray(response?.data)) data = response.data;
+    else if (Array.isArray(response)) data = response;
+    return data;
+  } catch (error) {
+    console.error('Error fetching devoluciones:', error);
+    const cached = NitroCache.get('dashboard_admin');
+    return cached?.data?.devoluciones || [];
+  }
+};
+
 /**
  * Obtiene las estadísticas resumidas para el dashboard
  * @returns {Promise} Objeto con estadísticas (top clientes, top productos, etc.)
@@ -88,13 +104,15 @@ export const fetchAllDashboardData = async () => {
     ventas: [],
     compras: [],
     clientes: [],
+    devoluciones: [],
   };
 
   try {
-    const [ventasData, comprasRes, clientesRes] = await Promise.allSettled([
+    const [ventasData, comprasRes, clientesRes, devolucionesRes] = await Promise.allSettled([
       getSales(),
       getCompras(),
       getClientes(),
+      getDevoluciones()
     ]);
 
     if (ventasData.status === 'fulfilled') result.ventas = ventasData.value || [];
@@ -105,6 +123,10 @@ export const fetchAllDashboardData = async () => {
     if (clientesRes.status === 'fulfilled') {
       const val = clientesRes.value;
       result.clientes = val?.data?.data || val?.data || (Array.isArray(val) ? val : []);
+    }
+    if (devolucionesRes.status === 'fulfilled') {
+      const val = devolucionesRes.value;
+      result.devoluciones = val?.data?.data || val?.data || (Array.isArray(val) ? val : []);
     }
 
     return result;
@@ -162,12 +184,38 @@ export const filterComprasByDateRange = (compras = [], startDate, endDate) => {
   });
 };
 
+/**
+ * Filtra devoluciones por rango de fechas
+ * @param {Array} devoluciones - Listado de devoluciones
+ * @param {string} startDate - Fecha inicio
+ * @param {string} endDate - Fecha fin
+ * @returns {Array} Devoluciones filtradas
+ */
+export const filterDevolucionesByDateRange = (devoluciones = [], startDate, endDate) => {
+  if (!startDate || !endDate) return devoluciones;
+
+  const parseDate = (dateStr) => {
+    const [day, month, year] = dateStr.split("/");
+    return new Date(year, month - 1, day).getTime();
+  };
+
+  const startTime = parseDate(startDate);
+  const endTime = parseDate(endDate);
+
+  return devoluciones.filter(d => {
+    const dTime = parseDate(d.Fecha || d.fecha)?.getTime?.();
+    return dTime >= startTime && dTime <= endTime;
+  });
+};
+
 export default {
   fetchDashboardVentas,
   fetchDashboardCompras,
   fetchDashboardClientes,
+  fetchDashboardDevoluciones,
   fetchDashboardStats,
   fetchAllDashboardData,
   filterVentasByDateRange,
   filterComprasByDateRange,
+  filterDevolucionesByDateRange,
 };

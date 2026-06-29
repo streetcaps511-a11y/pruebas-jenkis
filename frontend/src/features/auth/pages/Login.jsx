@@ -315,7 +315,6 @@ const Login = () => {
         clave: currentClave.trim(),
         force: useForce
       }, { signal: controller.signal });
-
       clearTimeout(timeoutId);
 
       const result = response.data;
@@ -323,29 +322,33 @@ const Login = () => {
         const token = result.data.token || result.data.Token;
         const { usuario } = result.data;
 
-        const userData = {
-          id: usuario.id,
-          IdUsuario: usuario.id,
-          IdCliente: usuario.IdCliente,
-          nombre: usuario.nombre,
-          Correo: usuario.email,
-          IdRol: usuario.idRol,
-          Rol: usuario.rol || usuario.rolData?.nombre || 'Cliente',
-          rol: usuario.rol || usuario.rolData?.nombre || 'Cliente',
-          Estado: usuario.estado,
-          avatarUrl: usuario.avatarUrl,
-          sessionId: usuario.sessionId,
-          permisos: usuario.permisos || [],
-          mustChangePassword: usuario.mustChangePassword === true || usuario.MustChangePassword === true,
-          token: token,
-          userType: (
-            usuario.rolData?.nombre === "Administrador" ||
-            usuario.idRol === 1 ||
-            (usuario.rolData?.nombre?.toLowerCase() !== "cliente" && usuario.rolData?.nombre !== undefined)
-          ) ? "admin" : "cliente"
-        };
+          let resolvedUserType = "cliente";
+          if (usuario.idRol === 1 || usuario.IdRol === 1 || (usuario.IdRol && usuario.IdRol === 1)) resolvedUserType = "admin";
+          else if (usuario.rolData && usuario.rolData.nombre && typeof usuario.rolData.nombre === 'string' && usuario.rolData.nombre.toLowerCase().includes("admin")) resolvedUserType = "admin";
+          else if (usuario.rol && typeof usuario.rol === 'string' && usuario.rol.toLowerCase().includes("admin")) resolvedUserType = "admin";
+          else if (usuario.Rol && typeof usuario.Rol === 'string' && usuario.Rol.toLowerCase().includes("admin")) resolvedUserType = "admin";
+          else if (usuario.idRol && typeof usuario.idRol === 'string' && usuario.idRol.toLowerCase().includes("admin")) resolvedUserType = "admin";
+          else if (usuario.nombreRol && typeof usuario.nombreRol === 'string' && usuario.nombreRol.toLowerCase().includes("admin")) resolvedUserType = "admin";
 
-        login(userData);
+          const userData = {
+            id: usuario.id,
+            IdUsuario: usuario.id,
+            IdCliente: usuario.IdCliente,
+            nombre: usuario.nombre,
+            Correo: usuario.email,
+            IdRol: usuario.idRol || usuario.IdRol,
+            Rol: usuario.rol || usuario.rolData?.nombre || usuario.Rol || 'Cliente',
+            rol: usuario.rol || usuario.rolData?.nombre || usuario.Rol || 'Cliente',
+            Estado: usuario.estado,
+            avatarUrl: usuario.avatarUrl,
+            sessionId: usuario.sessionId,
+            permisos: usuario.permisos || [],
+            mustChangePassword: usuario.mustChangePassword === true || usuario.MustChangePassword === true,
+            token: token,
+            userType: resolvedUserType
+          };
+
+          login(userData);
 
         const from = location.state?.from?.pathname;
         const isAdminLogin = userData.userType === "admin";

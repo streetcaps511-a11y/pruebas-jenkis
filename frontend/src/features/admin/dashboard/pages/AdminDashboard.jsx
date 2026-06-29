@@ -10,6 +10,7 @@ import {
   useDashboardData,
   useSalesByPeriod,
   usePurchasesByPeriod,
+  useDevolucionesByPeriod,
   useTopProducts,
   useTopCustomers,
   getMonthName
@@ -59,11 +60,12 @@ const AdminDashboard = () => {
   }, [comparar]);
 
   // Datos del dashboard desde API
-  const { ventas, compras, stats: _stats, refresh } = useDashboardData();
+  const { ventas, compras, devoluciones, stats: _stats, refresh } = useDashboardData();
 
   // Datos procesados para gráficos (con filtros de período)
   const salesData = useSalesByPeriod(ventas, viewMode, selectedYear, selectedMonth, selectedWeek);
   const purchasesData = usePurchasesByPeriod(compras, viewMode, selectedYear, selectedMonth, selectedWeek);
+  const devolucionesData = useDevolucionesByPeriod(devoluciones, viewMode, selectedYear, selectedMonth, selectedWeek);
 
   // Listas calculadas dinámicamente (con filtros de período)
   const topProducts = useTopProducts(ventas, "", viewMode, selectedYear, selectedMonth, selectedWeek);
@@ -165,7 +167,7 @@ const AdminDashboard = () => {
         {comparar ? (
           <>
             <ComparisonChart salesData={salesData} purchasesData={purchasesData} />
-            <ComparisonSummary salesData={salesData} purchasesData={purchasesData} />
+            <ComparisonSummary salesData={salesData} purchasesData={purchasesData} devolucionesData={devolucionesData} />
           </>
         ) : (
           <>

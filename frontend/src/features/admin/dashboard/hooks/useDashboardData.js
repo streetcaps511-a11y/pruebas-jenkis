@@ -8,6 +8,7 @@ import {
   fetchDashboardVentas,
   fetchDashboardCompras,
   fetchDashboardClientes,
+  fetchDashboardDevoluciones,
   fetchDashboardStats
 } from '../services/dashboardApi';
 import { NitroCache } from '../../../shared/utils/NitroCache';
@@ -20,6 +21,7 @@ export const useDashboardData = () => {
   const [ventas, setVentas] = useState([]);
   const [compras, setCompras] = useState([]);
   const [clientes, setClientes] = useState([]);
+  const [devoluciones, setDevoluciones] = useState([]);
   const [stats, setStats] = useState({
     totalVentas: 0,
     totalCompras: 0,
@@ -43,6 +45,7 @@ export const useDashboardData = () => {
       setVentas(cached.data.ventas || []);
       setCompras(cached.data.compras || []);
       setClientes(cached.data.clientes || []);
+      setDevoluciones(cached.data.devoluciones || []);
       setStats(cached.data.stats || {});
       return;
     }
@@ -60,10 +63,11 @@ export const useDashboardData = () => {
     };
 
     try {
-      const [rVentas, rCompras, rClientes, rStats] = await Promise.all([
+      const [rVentas, rCompras, rClientes, rDevoluciones, rStats] = await Promise.all([
         loadPiece(fetchDashboardVentas, setVentas, []),
         loadPiece(fetchDashboardCompras, setCompras, []),
         loadPiece(fetchDashboardClientes, setClientes, []),
+        loadPiece(fetchDashboardDevoluciones, setDevoluciones, []),
         loadPiece(fetchDashboardStats, (data) => {
            setStats({
               ...data,
@@ -77,6 +81,7 @@ export const useDashboardData = () => {
         ventas: rVentas, 
         compras: rCompras, 
         clientes: rClientes, 
+        devoluciones: rDevoluciones,
         stats: rStats 
       });
     } catch (err) {
@@ -97,6 +102,7 @@ export const useDashboardData = () => {
     ventas, 
     compras, 
     clientes, 
+    devoluciones,
     stats,
     loading: false, 
     error: null,

@@ -5,10 +5,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LabelList } from 'recharts';
 
-const getMonthName = (monthNumber) => {
-  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-  return months[monthNumber - 1] || monthNumber;
-};
 
 const formatDashboardValue = (v) => {
   if (v === 0) return '$0';
@@ -173,9 +169,10 @@ export const ComparisonChart = ({ salesData = [], purchasesData = [] }) => {
 /**
  * Componente del panel lateral con el resumen de métricas y ganancias
  */
-export const ComparisonSummary = ({ salesData = [], purchasesData = [] }) => {
+export const ComparisonSummary = ({ salesData = [], purchasesData = [], devolucionesData = [] }) => {
   const totalSales = salesData.reduce((acc, curr) => acc + curr.total, 0);
   const totalPurchases = purchasesData.reduce((acc, curr) => acc + curr.total, 0);
+  const totalDevoluciones = devolucionesData.length;
   
   const netProfit = totalSales - totalPurchases;
   const profitMargin = totalSales > 0 ? (netProfit / totalSales) * 100 : 0;
@@ -195,6 +192,11 @@ export const ComparisonSummary = ({ salesData = [], purchasesData = [] }) => {
       <div className="metric-row-premium">
         <span className="metric-label">Costos Totales (Compras)</span>
         <span className="metric-val-green">${totalPurchases.toLocaleString('es-CO')}</span>
+      </div>
+
+      <div className="metric-row-premium" style={{ borderLeftColor: '#f43f5e' }}>
+        <span className="metric-label">Total de Devoluciones</span>
+        <span className="metric-val" style={{ color: '#f43f5e', fontWeight: 'bold' }}>{totalDevoluciones}</span>
       </div>
 
       <div className="metric-row-premium main-profit">

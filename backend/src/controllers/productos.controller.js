@@ -147,8 +147,9 @@ const productoController = {
             imagen: imgs[0] || 'https://placehold.co/800x800?text=Sin+Imagen',
             imagenes: imgs,
             stock: currentStock,
-            destacado: false,
-            sales: Number(pPlain.sales || 0)
+            destacado: !!pPlain.destacado,
+            sales: Number(pPlain.sales || 0),
+            isActive: pPlain.isActive !== false
           };
           if (pPlain.enOfertaVenta) {
             minimalProduct.enOferta = true;

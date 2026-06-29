@@ -14,10 +14,27 @@
 .form-input-main { background-color: transparent; border: 1px solid #334155; border-radius: 8px; padding: 0 16px; color: #fff; width: 100%; outline: none; height: 34px; /* Even slimmer */ font-size: 12px; box-sizing: border-box; transition: all 0.2s ease; }
 .form-input-main:focus { border-color: #FFD700; background-color: transparent; /* No fill on focus */ box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.15); }
 .form-input-main.has-error { border-color: #ef4444; }
+
+/* Correcciones para selects nativos en modo oscuro (Safari/WebKit) */
+select.form-input-main {
+    background-color: #0c0f14 !important;
+    color: #ffffff !important;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFD700" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position-x: 98%;
+    background-position-y: center;
+    padding-right: 30px;
+}
+select.form-input-main option {
+    background-color: #0c0f14;
+    color: #ffffff;
+}
 /* Sección de Productos */
 .products-section-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; align-items: start; }
 .products-table-header { display: grid; gap: 12px; padding: 0 0 12px 0; border-bottom: 1px dashed #ffffff20; margin-bottom: 15px; align-items: center; grid-template-columns: 1.6fr 1.2fr 100px 140px 140px 40px; }
-.products-table-header-view { /* Se define en el componente para mayor flexibilidad */ }
+/* .products-table-header-view: Se define en el componente para mayor flexibilidad */
 .products-table-header .header-label { font-size: 11px; color: #8F9DB1; font-weight: 800; letter-spacing: 0.6px; }
 .products-table-header .header-label.center { text-align: center; }
 .products-table-header .header-label.important { color: #F5C81B; font-weight: 900; }
@@ -103,4 +120,3 @@
 .ventas-field-select:focus { border-color: #FFD700; box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.2); }
 .ventas-field-select option { background-color: #0b1220; color: #ffffff; padding: 10px; }
 .ventas-field-select:disabled { opacity: 0.5; cursor: not-allowed; }
-/* CSS Refresh */

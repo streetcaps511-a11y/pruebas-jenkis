@@ -165,6 +165,7 @@ const proveedorController = {
             // Validar datos
             const validationErrors = await validateProveedor(data);
             if (validationErrors.length > 0) {
+                console.log("Validation errors in backend:", validationErrors, "Data:", data);
                 await transaction.rollback();
                 return res.status(400).json({
                     success: false,

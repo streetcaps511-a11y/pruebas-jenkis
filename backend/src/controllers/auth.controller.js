@@ -32,15 +32,19 @@ const authController = {
                 return res.status(400).json({ success: false, message: 'El correo electrónico ya está registrado. Por favor, intenta con otro o inicia sesión.' });
             }
 
-            // Generar PIN numérico de 6 dígitos
-            const pin = crypto.randomInt(100000, 1000000).toString();
+            // Generar PIN numérico de 6 dígitos (fijo para correos de prueba)
+            const pin = searchEmail.endsWith('@test.com') 
+                ? '123456' 
+                : crypto.randomInt(100000, 1000000).toString();
             const expiresAt = new Date(Date.now() + PIN_TTL_MS);
 
             // Guardar PIN en memoria
             verificationStore.set(searchEmail, { pin, expiresAt });
 
-            // Enviar correo con la plantilla premium
-            await sendPinEmail(searchEmail, pin);
+            // Enviar correo con la plantilla premium solo si no es de prueba
+            if (!searchEmail.endsWith('@test.com')) {
+                await sendPinEmail(searchEmail, pin);
+            }
 
             res.json({ success: true, message: 'Código de verificación enviado a tu correo.' });
         } catch (error) {

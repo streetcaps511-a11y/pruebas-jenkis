@@ -344,3 +344,18 @@ export const useTopCustomers = (ventas, customerSearch, viewMode, selectedYear, 
       .slice(0, 24);
   }, [ventas, customerSearch, viewMode, selectedYear, selectedMonth, selectedWeek]);
 };
+
+/**
+ * Hook para obtener devoluciones filtradas por período
+ */
+export const useDevolucionesByPeriod = (devoluciones, viewMode = 'mes', selectedYear, selectedMonth = "", selectedWeek = "1") => {
+  return useMemo(() => {
+    const targetYear = selectedYear?.toString() || new Date().getFullYear().toString();
+    const targetMonth = selectedMonth?.toString() || (new Date().getMonth() + 1).toString();
+    const targetWeek = selectedWeek?.toString() || "1";
+
+    return (devoluciones || []).filter(d => 
+      isTransactionInWindow(d, viewMode, targetYear, targetMonth, targetWeek)
+    );
+  }, [devoluciones, viewMode, selectedYear, selectedMonth, selectedWeek]);
+};

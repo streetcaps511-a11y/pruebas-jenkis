@@ -5,7 +5,7 @@ import toml from 'toml';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

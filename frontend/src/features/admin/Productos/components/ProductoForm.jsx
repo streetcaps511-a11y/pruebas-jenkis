@@ -25,23 +25,14 @@ const Switch = ({ checked, onChange, id, disabled = false }) => (
 );
 
 const ProductoForm = ({
-  isEdit = false,
   formData,
   errors,
   categoriasRaw = [],
-  tallasStock,
-  availableTallas = [],
   coloresProducto,
   urlsImagenes,
   availableColores = [],
   handleInputChange,
   handleSubmit,
-  agregarTalla,
-  eliminarTalla,
-  handleTallaChange,
-  incrementarCantidad,
-  decrementarCantidad,
-  handleCantidadChange,
   agregarUrlImagen,
   eliminarUrlImagen,
   actualizarUrlImagen,
@@ -263,69 +254,6 @@ const ProductoForm = ({
         <div className="product-form-bottom-row">
           <div className="product-form-section no-frame detailed">
             <div className="detailed-grid">
-              {/* TALLAS */}
-              {/* TALLAS */}
-              <div className={`form-card tallas ${errors.tallasStock ? 'card-has-error' : ''}`}>
-                <div className="form-card-header">
-                  <h3 className="form-card-title">Tallas y Stock</h3>
-                  {!isEdit && (
-                    <button type="button" onClick={agregarTalla} className="btn-add-circle">+ Agregar</button>
-                  )}
-                </div>
-                <div className="form-card-content">
-                  {errors.tallasStock && <div className="card-error-msg">{errors.tallasStock}</div>}
-                  
-                  {isEdit ? (
-                    /* MODO EDICIÓN: SOLO LECTURA */
-                    (!tallasStock || tallasStock.length === 0) ? (
-                      <div className="no-items-placeholder">No hay tallas</div>
-                    ) : (
-                      <div className="form-card-list">
-                        {tallasStock.map((item, index) => (
-                          <div key={index} className="form-list-row talla-row" style={{ width: '100%', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '10px 5px' }}>
-                            <span style={{ flex: 1, color: '#fff', fontSize: '13px' }}>{item.talla}</span>
-                            <span style={{ width: '80px', textAlign: 'right', color: '#F5C81B', fontWeight: '800', fontSize: '13px' }}>{item.cantidad} uds</span>
-                          </div>
-                        ))}
-                      </div>
-                    )
-                  ) : (
-                    /* MODO CREACIÓN: EDITABLE */
-                    <div className="form-card-list" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
-                      {tallasStock.map((item, index) => (
-                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <div className="talla-stock-group">
-                            <select
-                              value={item.talla}
-                              onChange={(e) => handleTallaChange(index, e.target.value)}
-                              className="form-select-sm"
-                            >
-                              <option value="">Talla</option>
-                              {availableTallas.map(t => (
-                                <option key={t} value={t}>{t}</option>
-                              ))}
-                            </select>
-                            
-                            <div className="stock-control">
-                              <button type="button" onClick={() => decrementarCantidad(index)} className="btn-stock-minus"><FaMinus size={10} /></button>
-                              <input
-                                type="text"
-                                value={item.cantidad === 0 ? '' : item.cantidad}
-                                onChange={(e) => handleCantidadChange(index, e.target.value)}
-                                className="form-input-stock"
-                                placeholder="0"
-                              />
-                              <button type="button" onClick={() => incrementarCantidad(index)} className="btn-stock-plus"><FaPlus size={10} /></button>
-                            </div>
-                          </div>
-                          
-                          <button type="button" onClick={() => eliminarTalla(index)} className="btn-delete" style={{ margin: 0 }}><FaTrash size={12} /></button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
 
               {/* COLORES */}
               <div className={`form-card colores ${errors.colores ? 'card-has-error' : ''}`}>

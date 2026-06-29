@@ -67,6 +67,7 @@ export const ClienteFormFields = ({ modalState, formData, handleInputChange, err
         <div>
           <label className="form-field-label">{label}: <span style={{ color: "#ef4444" }}>*</span></label>
           <select
+            name={fieldName}
             value={formData[fieldName] || ''}
             onChange={(e) => handleInputChange(fieldName, e.target.value)}
             className={`form-field-input ${isError ? 'has-error' : ''}`}
@@ -86,6 +87,7 @@ export const ClienteFormFields = ({ modalState, formData, handleInputChange, err
         <input
           ref={fieldName === 'documentNumber' ? firstInputRef : null}
           type={type}
+          name={fieldName}
           value={formData[fieldName] || ''}
           onChange={(e) => handleInputChange(fieldName, e.target.value)}
           maxLength={fieldName === 'documentNumber' ? (formData.documentType === 'NIT' ? 10 : (formData.documentType === 'Pasaporte' ? 20 : 15)) : undefined}
@@ -140,6 +142,7 @@ export const ClienteFormFields = ({ modalState, formData, handleInputChange, err
             <div style={{ flex: 1 }}>
               <input
                 type="tel"
+                name="phone"
                 value={formData.phone || ''}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 className={`form-field-input ${errors.phone ? 'has-error' : ''}`}

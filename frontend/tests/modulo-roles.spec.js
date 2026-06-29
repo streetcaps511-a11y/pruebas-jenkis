@@ -62,9 +62,12 @@ test.describe('Módulo de Configuración - Roles y Permisos', () => {
         await page.locator('.custom-switch').first().click();
 
         // CA_04_03: Confirmación si aparece modal
-        const modal = page.locator('[class*="modal"], [class*="confirm"]');
-        if (await modal.isVisible({ timeout: 2000 }).catch(() => false)) {
+        const modal = page.locator('[class*="modal"], [class*="confirm"]').first();
+        try {
+            await modal.waitFor({ state: 'visible', timeout: 2000 });
             await page.click('button:has-text("Confirmar")');
+        } catch (_e) {
+            // No apareció el modal
         }
 
         await expect(page.locator('.alert-container')).toBeVisible({ timeout: 5000 });
@@ -148,9 +151,5 @@ test.describe('Módulo de Configuración - Roles y Permisos', () => {
         // CA_07_02 y CA_07_03: Permisos visibles y seleccionables
         const cantidadPermisos = await page.locator('.permission-item').count();
         expect(cantidadPermisos).toBeGreaterThan(0);
-    });
-
-    test.skip('HU_08: Buscar permisos', async () => {
-        // Test omitido: El frontend no tiene buscador de permisos implementado.
     });
 });

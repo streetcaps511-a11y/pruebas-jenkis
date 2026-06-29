@@ -11,6 +11,7 @@ export {
   getMonthName,
   useSalesByPeriod,
   usePurchasesByPeriod,
+  useDevolucionesByPeriod,
   useTopProducts,
   useTopCustomers
 } from './useChartData';
