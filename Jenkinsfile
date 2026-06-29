@@ -3,17 +3,23 @@ pipeline {
     stages {
         stage('Install') {
             steps {
-                bat 'npm install'
+                dir('frontend') {
+                    bat 'npm install'
+                }
             }
         }
         stage('Test') {
             steps {
-                bat 'npm test -- --watchAll=false'
+                dir('frontend') {
+                    bat 'npm test'
+                }
             }
         }
         stage('Build') {
             steps {
-                bat 'npm run build'
+                dir('frontend') {
+                    bat 'npm run build'
+                }
             }
         }
     }
