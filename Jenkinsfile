@@ -11,12 +11,14 @@ pipeline {
                 dir('backend') { bat 'npm install' }
             }
         }
-        stage('Install Playwright') {
-            steps {
-                bat 'npm install'
-                bat 'npx playwright install --with-deps chromium firefox webkit'
-            }
-        }
+   stage('Install Playwright') {
+    steps {
+        bat 'npm install'
+        bat 'npx playwright install chromium'
+        bat 'npx playwright install firefox'
+        bat 'npx playwright install webkit'
+    }
+}
         stage('Test') {
             steps {
                 withCredentials([file(credentialsId: 'e1b4792d-474c-47d1-b018-64270bb40399', variable: 'BACKEND_ENV')]) {
