@@ -14,7 +14,7 @@ pipeline {
         stage('Install Playwright') {
             steps {
                 bat 'npm install'
-                bat 'npx playwright install --with-deps chromium'
+                bat 'npx playwright install --with-deps chromium firefox webkit'
             }
         }
         stage('Test') {
@@ -24,7 +24,7 @@ pipeline {
                 }
                 bat 'start /B cmd /c "cd backend && npm start > backend.log 2>&1"'
                 bat 'ping -n 15 127.0.0.1 > nul'
-                bat 'npx playwright test --project=chromium'
+                bat 'npx playwright test'
             }
         }
         stage('Build') {
