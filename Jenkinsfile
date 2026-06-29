@@ -1,18 +1,17 @@
 pipeline {
     agent any
+    environment {
+        BACKEND_ENV = credentials('backend-env-file')
+    }
     stages {
         stage('Install Frontend') {
             steps {
-                dir('frontend') {
-                    bat 'npm install'
-                }
+                dir('frontend') { bat 'npm install' }
             }
         }
         stage('Install Backend') {
             steps {
-                dir('backend') {
-                    bat 'npm install'
-                }
+                dir('backend') { bat 'npm install' }
             }
         }
         stage('Install Playwright') {
@@ -23,18 +22,15 @@ pipeline {
         }
         stage('Test') {
             steps {
-                bat '''
-                    start /B cmd /c "cd backend && npm start"
-                    timeout /t 10
-                    npx playwright test --project=chromium
-                '''
+                bat 'copy %BACKEND_ENV% backend\\.env'
+                bat 'start /B cmd /c "cd backend && npm start > backend.log 2>&1"'
+                bat 'ping -n 15 127.0.0.1 > nul'
+                bat 'npx playwright test --project=chromium'
             }
         }
         stage('Build') {
             steps {
-                dir('frontend') {
-                    bat 'npm run build'
-                }
+                dir('frontend') { bat 'npm run build' }
             }
         }
     }
