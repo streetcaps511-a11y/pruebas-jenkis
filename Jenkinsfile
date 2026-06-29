@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    environment {
-        BACKEND_ENV = credentials('backend-env-file')
-    }
     stages {
         stage('Install Frontend') {
             steps {
@@ -22,7 +19,9 @@ pipeline {
         }
         stage('Test') {
             steps {
-                bat 'copy %BACKEND_ENV% backend\\.env'
+                withCredentials([file(credentialsId: 'backend-env-file', variable: 'BACKEND_ENV')]) {
+                    bat 'copy %BACKEND_ENV% backend\\.env'
+                }
                 bat 'start /B cmd /c "cd backend && npm start > backend.log 2>&1"'
                 bat 'ping -n 15 127.0.0.1 > nul'
                 bat 'npx playwright test --project=chromium'
@@ -36,14 +35,16 @@ pipeline {
     }
     post {
         always {
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'playwright-report',
-                reportFiles: 'index.html',
-                reportName: 'Playwright Report'
-            ])
+            node('built-in') {
+                publishHTML([
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'playwright-report',
+                    reportFiles: 'index.html',
+                    reportName: 'Playwright Report'
+                ])
+            }
         }
     }
 }
