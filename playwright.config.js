@@ -79,11 +79,20 @@ module.exports = defineConfig({
     ],
 
     // ─── SERVIDOR WEB ────────────────────────────────────────────────────────────
-    webServer: {
-        command: 'npm run dev',
-        url: 'http://localhost:5173',
-        cwd: './frontend',
-        reuseExistingServer: true,   // ← reutiliza el dev server ya activo
-        timeout: 60000,
-    },
+    webServer: [
+        {
+            command: 'npm run dev',
+            url: 'http://localhost:5173',
+            cwd: './frontend',
+            reuseExistingServer: true,   // ← reutiliza el dev server ya activo
+            timeout: 60000,
+        },
+        {
+            command: 'npm start',
+            url: 'http://localhost:3000',
+            cwd: './backend',
+            reuseExistingServer: true,   // ← reutiliza el servidor de backend ya activo
+            timeout: 60000,
+        }
+    ],
 });
