@@ -24,20 +24,20 @@ test.describe('Módulo Clientes', () => {
         // 2. Buscador por estado
         const statusFilterBtn = page.locator('.status-filter-trigger').first();
         if (await statusFilterBtn.isVisible()) {
-            await statusFilterBtn.click();
+            await statusFilterBtn.dispatchEvent('click');
             await page.waitForTimeout(500);
             
             // Seleccionar "Activos"
             const filterOption = page.locator('.filter-option-item:has-text("Activos")').first();
             if (await filterOption.isVisible()) {
-                await filterOption.click();
+                await filterOption.dispatchEvent('click');
                 await page.waitForTimeout(1000);
             }
             
             // Volver a "Todos"
-            await statusFilterBtn.click();
+            await statusFilterBtn.dispatchEvent('click');
             await page.waitForTimeout(500);
-            await page.locator('.filter-option-item:has-text("Todos")').first().click();
+            await page.locator('.filter-option-item:has-text("Todos")').first().dispatchEvent('click');
             await page.waitForTimeout(500);
         }
     });

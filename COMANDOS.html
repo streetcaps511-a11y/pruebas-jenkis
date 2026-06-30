@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StreetCaps — Comandos del Proyecto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #161a23;
+      --surface2: #1e2330;
+      --border: #2a3045;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --accent3: #ff6b6b;
+      --accent4: #ffd166;
+      --text: #e8eaf0;
+      --text-muted: #7a8299;
+      --green: #22c55e;
+      --orange: #f97316;
+      --blue: #38bdf8;
+      --purple: #a78bfa;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      text-align: center;
+      padding: 32px 0 40px;
+    }
+
+    header .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #6c63ff22, #00d4aa22);
+      border: 1px solid #6c63ff44;
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+
+    header h1 {
+      font-size: clamp(26px, 5vw, 42px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff 30%, #6c63ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* ─── GRID ─── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 18px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ─── CARD ─── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px #6c63ff22;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .card-header .icon {
+      font-size: 18px;
+    }
+
+    .card-header.green  { background: #22c55e18; border-color: #22c55e33; color: #22c55e; }
+    .card-header.blue   { background: #38bdf818; border-color: #38bdf833; color: #38bdf8; }
+    .card-header.purple { background: #a78bfa18; border-color: #a78bfa33; color: #a78bfa; }
+    .card-header.orange { background: #f9731618; border-color: #f9731633; color: #f97316; }
+    .card-header.red    { background: #ff6b6b18; border-color: #ff6b6b33; color: #ff6b6b; }
+    .card-header.yellow { background: #ffd16618; border-color: #ffd16633; color: #ffd166; }
+    .card-header.teal   { background: #00d4aa18; border-color: #00d4aa33; color: #00d4aa; }
+
+    .card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+
+    /* ─── CMD ROW ─── */
+    .cmd-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      position: relative;
+    }
+
+    .cmd-row:hover { background: #252b3b; border-color: var(--accent); }
+
+    .cmd-row:hover .copy-hint { opacity: 1; }
+
+    .cmd-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .cmd-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      color: #c4d0ff;
+      word-break: break-all;
+    }
+
+    .cmd-dir {
+      font-size: 10px;
+      color: var(--accent2);
+      font-family: 'JetBrains Mono', monospace;
+      opacity: .8;
+    }
+
+    .copy-hint {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 10px;
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity .2s;
+      font-weight: 600;
+    }
+
+    /* Copiado! toast */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--accent2);
+      color: #000;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 10px 22px;
+      border-radius: 100px;
+      opacity: 0;
+      transition: all .3s cubic-bezier(.175,.885,.32,1.275);
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─── FLUJO COMPLETO ─── */
+    .flujo-card {
+      grid-column: 1 / -1;
+      background: var(--surface);
+      border: 1px solid #6c63ff44;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .flujo-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+
+    .flujo-step {
+      flex: 1;
+      min-width: 200px;
+      padding: 18px 20px;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+
+    .flujo-step:last-child { border-right: none; }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .step-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .step-cmd {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--accent2);
+      line-height: 1.8;
+    }
+
+    .step-dir {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ─── SEPARADOR ─── */
+    .section-title {
+      grid-column: 1 / -1;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 8px 0 4px;
+      border-bottom: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">🎯 StreetCaps QA</div>
+    <h1>Comandos del Proyecto</h1>
+    <p>Haz clic en cualquier comando para copiarlo al portapapeles</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- FLUJO COMPLETO -->
+    <div class="flujo-card">
+      <div class="card-header purple">
+        <span class="icon">⚡</span> Flujo Completo de un Ciclo
+      </div>
+      <div class="flujo-steps">
+        <div class="flujo-step">
+          <div class="step-num">1</div>
+          <div class="step-title">Iniciar Backend</div>
+          <div class="step-cmd">npm run dev</div>
+          <div class="step-dir">📁 backend/</div>
+        </div>
+        <div class="flujo-step">
+          <div class="step-num">2</div>
+          <div class="step-title">Iniciar Frontend</div>
+          <div class="step-cmd">npm run dev</div>
+          <div class="step-dir">📁 frontend/</div>
+        </div>
+        <div class="flujo-step">
+          <div class="step-num">3</div>
+          <div class="step-title">Correr Tests</div>
+          <div class="step-cmd">npx playwright test<br>--project=chromium</div>
+          <div class="step-dir">📁 raíz del proyecto</div>
+        </div>
+        <div class="flujo-step">
+          <div class="step-num">4</div>
+          <div class="step-title">Ver Reporte</div>
+          <div class="step-cmd">npx playwright show-report</div>
+          <div class="step-dir">📁 raíz del proyecto</div>
+        </div>
+        <div class="flujo-step">
+          <div class="step-num">5</div>
+          <div class="step-title">Limpiar BD</div>
+          <div class="step-cmd">node cleanup_test_data.js</div>
+          <div class="step-dir">📁 backend/</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVIDORES -->
+    <div class="section-title">🖥️ Servidores</div>
+
+    <div class="card">
+      <div class="card-header green"><span class="icon">🟢</span> Frontend (Vite)</div>
+      <div class="card-body">
+        <div class="cmd-row" onclick="copiar(this, 'npm run dev')">
+          <span class="cmd-label">Iniciar servidor de desarrollo</span>
+          <span class="cmd-code">npm run dev</span>
+          <span class="cmd-dir">📁 frontend/</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue"><span class="icon">🔵</span> Backend (Node + Express)</div>
+      <div class="card-body">
+        <div class="cmd-row" onclick="copiar(this, 'npm run dev')">
+          <span class="cmd-label">Iniciar servidor (auto-reload)</span>
+          <span class="cmd-code">npm run dev</span>
+          <span class="cmd-dir">📁 backend/</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npm start')">
+          <span class="cmd-label">Iniciar servidor (producción)</span>
+          <span class="cmd-code">npm start</span>
+          <span class="cmd-dir">📁 backend/</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TESTS PLAYWRIGHT -->
+    <div class="section-title">🧪 Tests Playwright — desde raíz del proyecto</div>
+
+    <div class="card">
+      <div class="card-header purple"><span class="icon">🌐</span> Todos los Tests</div>
+      <div class="card-body">
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test --project=chromium')">
+          <span class="cmd-label">Todos — Chromium</span>
+          <span class="cmd-code">npx playwright test --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test --project=firefox')">
+          <span class="cmd-label">Todos — Firefox</span>
+          <span class="cmd-code">npx playwright test --project=firefox</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test')">
+          <span class="cmd-label">Todos — Todos los browsers</span>
+          <span class="cmd-code">npx playwright test</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test --headed --project=chromium')">
+          <span class="cmd-label">Con navegador visible</span>
+          <span class="cmd-code">npx playwright test --headed --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright show-report')">
+          <span class="cmd-label">Ver reporte HTML</span>
+          <span class="cmd-code">npx playwright show-report</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header teal"><span class="icon">📦</span> Tests por Módulo</div>
+      <div class="card-body">
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-pedidos.spec.js --project=chromium')">
+          <span class="cmd-label">Pedidos / Ventas E2E</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-pedidos.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-ventas.spec.js --project=chromium')">
+          <span class="cmd-label">Ventas (admin)</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-ventas.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-clientes.spec.js --project=chromium')">
+          <span class="cmd-label">Clientes</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-clientes.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-usuarios.spec.js --project=chromium')">
+          <span class="cmd-label">Usuarios</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-usuarios.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-productos.spec.js --project=chromium')">
+          <span class="cmd-label">Productos</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-productos.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-categorias.spec.js --project=chromium')">
+          <span class="cmd-label">Categorías</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-categorias.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-proveedores.spec.js --project=chromium')">
+          <span class="cmd-label">Proveedores</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-proveedores.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-compras.spec.js --project=chromium')">
+          <span class="cmd-label">Compras</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-compras.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-roles.spec.js --project=chromium')">
+          <span class="cmd-label">Roles</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-roles.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-devoluciones.spec.js --project=chromium')">
+          <span class="cmd-label">Devoluciones</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-devoluciones.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-acceso.spec.js --project=chromium')">
+          <span class="cmd-label">Acceso / Login</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-acceso.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-dashboard.spec.js --project=chromium')">
+          <span class="cmd-label">Dashboard</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-dashboard.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npx playwright test frontend/tests/modulo-e2e-pedidos.spec.js --project=chromium')">
+          <span class="cmd-label">E2E Pedidos completo</span>
+          <span class="cmd-code">npx playwright test frontend/tests/modulo-e2e-pedidos.spec.js --project=chromium</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BASE DE DATOS -->
+    <div class="section-title">🗄️ Base de Datos — desde backend/</div>
+
+    <div class="card">
+      <div class="card-header red"><span class="icon">🧹</span> Limpieza de Datos</div>
+      <div class="card-body">
+        <div class="cmd-row" onclick="copiar(this, 'node cleanup_test_data.js')">
+          <span class="cmd-label">Limpiar TODOS los datos de prueba</span>
+          <span class="cmd-code">node cleanup_test_data.js</span>
+          <span class="cmd-dir">📁 backend/</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'node delete_test_data.js')">
+          <span class="cmd-label">Limpiar solo productos de prueba (viejo)</span>
+          <span class="cmd-code">node delete_test_data.js</span>
+          <span class="cmd-dir">📁 backend/</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'node check_columns.js')">
+          <span class="cmd-label">Inspeccionar columnas de tablas</span>
+          <span class="cmd-code">node check_columns.js</span>
+          <span class="cmd-dir">📁 backend/</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header orange"><span class="icon">🌱</span> Scripts de Base de Datos</div>
+      <div class="card-body">
+        <div class="cmd-row" onclick="copiar(this, 'node scripts/seed_admin.js')">
+          <span class="cmd-label">Crear/restaurar usuario admin</span>
+          <span class="cmd-code">node scripts/seed_admin.js</span>
+          <span class="cmd-dir">📁 backend/</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'npm run usuarios')">
+          <span class="cmd-label">Listar usuarios en BD</span>
+          <span class="cmd-code">npm run usuarios</span>
+          <span class="cmd-dir">📁 backend/</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'node scripts/seed_estados.js')">
+          <span class="cmd-label">Sembrar estados de venta</span>
+          <span class="cmd-code">node scripts/seed_estados.js</span>
+          <span class="cmd-dir">📁 backend/</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'node scripts/seed_tallas.js')">
+          <span class="cmd-label">Sembrar tallas</span>
+          <span class="cmd-code">node scripts/seed_tallas.js</span>
+          <span class="cmd-dir">📁 backend/</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GIT -->
+    <div class="section-title">🔀 Git — desde raíz</div>
+
+    <div class="card">
+      <div class="card-header yellow"><span class="icon">🔀</span> Git</div>
+      <div class="card-body">
+        <div class="cmd-row" onclick="copiar(this, 'git status')">
+          <span class="cmd-label">Ver estado</span>
+          <span class="cmd-code">git status</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'git add . && git commit -m \"fix: descripcion\" && git push')">
+          <span class="cmd-label">Guardar y subir cambios</span>
+          <span class="cmd-code">git add . && git commit -m "fix: descripcion" && git push</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+        <div class="cmd-row" onclick="copiar(this, 'git pull origin main')">
+          <span class="cmd-label">Actualizar desde main</span>
+          <span class="cmd-code">git pull origin main</span>
+          <span class="copy-hint">📋 Copiar</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">✅ ¡Copiado al portapapeles!</div>
+
+  <script>
+    function copiar(el, cmd) {
+      navigator.clipboard.writeText(cmd).then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      });
+    }
+  </script>
+</body>
+</html>

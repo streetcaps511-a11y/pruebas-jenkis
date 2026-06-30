@@ -5,6 +5,8 @@ test.describe('Módulo de Configuración - Roles y Permisos', () => {
         // ✅ Ya NO necesita login - usa el storageState del setup
         await page.goto('http://localhost:5173/admin/roles');
         await page.waitForSelector('.entity-table', { timeout: 15000 });
+        // Esperar a que los datos estén cargados antes de interactuar
+        await page.locator('span[title="Ver detalles"]').first().waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
     });
 
     test('HU_01: Registrar un rol nuevo y validar que no permite duplicados', async ({ page }) => {
@@ -30,7 +32,7 @@ test.describe('Módulo de Configuración - Roles y Permisos', () => {
 
     test('HU_02: Editar rol existente', async ({ page }) => {
         // CA_02_01: Ver información actual del rol
-        await page.locator('span[title="Editar"]').first().click();
+        await page.locator('span[title="Editar"] .action-icon').first().click();
         await page.waitForSelector('.role-form', { timeout: 5000 });
 
         // CA_02_02: Modificar y guardar
@@ -75,7 +77,7 @@ test.describe('Módulo de Configuración - Roles y Permisos', () => {
 
     test('HU_05: Visualizar el detalle de un rol y sus permisos', async ({ page }) => {
         // CA_05_01, CA_05_02, CA_05_03: Ver detalles y permisos
-        await page.locator('span[title="Ver detalles"]').first().click();
+        await page.locator('span[title="Ver detalles"] .action-icon').first().click();
         await expect(page.locator('.permissions-grid')).toBeVisible({ timeout: 5000 });
         await expect(page.locator('.permission-item').first()).toBeVisible();
     });
@@ -126,7 +128,7 @@ test.describe('Módulo de Configuración - Roles y Permisos', () => {
         await expect(filaInactiva).toBeVisible({ timeout: 5000 });
 
         // CA_06_03: Hacer clic en Eliminar (ahora el rol es inactivo → debe abrir modal)
-        await filaInactiva.locator('span[title="Eliminar"]').click();
+        await filaInactiva.locator('span[title="Eliminar"] .action-icon').click();
 
         // CA_06_04: Verificar que aparece el modal de confirmación real (ConfirmDeleteModal)
         await expect(page.locator('.delete-modal-container')).toBeVisible({ timeout: 5000 });

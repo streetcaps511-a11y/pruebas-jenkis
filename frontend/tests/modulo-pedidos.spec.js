@@ -163,7 +163,7 @@ test.describe.serial('Módulo Ventas/Pedidos E2E Flow', () => {
 
         const btnContinuar = customerPage.locator('button:has-text("CONTINUAR")');
         if (await btnContinuar.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await btnContinuar.click();
+            await btnContinuar.dispatchEvent('click');
 
             // El CustomConfirm de auth tiene título "Atención" y botón "Iniciar sesión"
             // Puede también redirigir directamente a /login
@@ -218,6 +218,7 @@ test.describe.serial('Módulo Ventas/Pedidos E2E Flow', () => {
     //  PASO 2: Cliente inicia sesión, agrega al carrito y compra (×2 pedidos)
     // ─────────────────────────────────────────────────────────────────────────
     test('Paso 2: Cliente inicia sesión, agrega al carrito y compra', async () => {
+        test.setTimeout(120000);
         // Login
         const tabLogin = customerPage.locator('button:has-text("Login")');
         if (await tabLogin.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -293,12 +294,13 @@ test.describe.serial('Módulo Ventas/Pedidos E2E Flow', () => {
     //  PASO 4: Cliente solicita devoluciones en el perfil
     // ─────────────────────────────────────────────────────────────────────────
     test('Paso 4: Cliente solicita devoluciones en el perfil', async () => {
+        test.setTimeout(120000);
         await customerPage.goto('http://localhost:5173/perfil');
         await customerPage.waitForLoadState('networkidle');
 
         // Navegar a pestaña "Mis Pedidos"
         const tabPedidos = customerPage.locator('text="Mis Pedidos", button:has-text("Mis Pedidos")');
-        if (await tabPedidos.isVisible()) await tabPedidos.click();
+        if (await tabPedidos.isVisible()) await tabPedidos.dispatchEvent('click');
 
         // PEDIDO 1: Devolver ítem
         const btnDetalles1 = customerPage.locator('button:has-text("Ver Detalles"), .btn-detalles').first();

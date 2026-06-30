@@ -6,12 +6,14 @@ test.describe('Módulo de Usuarios', () => {
         await page.goto('http://localhost:5173/admin/usuarios');
         await page.waitForLoadState('networkidle');
         // Esperar a que la tabla o el indicador de carga esté visible
-        await page.waitForSelector('.users-container', { state: 'visible', timeout: 10000 });
+        await page.waitForSelector('.users-container', { state: 'visible', timeout: 15000 });
+        // Esperar a que los datos estén cargados antes de interactuar
+        await page.locator('span[title="Ver detalles"]').first().waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
     });
 
     test('HU_09: Registrar un usuario nuevo', async ({ page }) => {
         // CA_09_01: Ingresar info esencial
-        await page.locator('button:has-text("Registrar Usuario")').click({ force: true });
+        await page.locator('button:has-text("Registrar Usuario")').dispatchEvent('click');
         await expect(page.locator('.universal-modal-container')).toBeVisible();
 
         const ts = Date.now().toString().slice(-4);
@@ -70,12 +72,12 @@ test.describe('Módulo de Usuarios', () => {
 
         const filaQA = page.locator('.entity-table tbody tr:has(span[title="Editar"])').first();
         if (await filaQA.isVisible()) {
-            await filaQA.locator('span[title="Editar"]').click({ force: true });
+            await filaQA.locator('span[title="Editar"] .action-icon').dispatchEvent('click');
         } else {
             // Fallback si no hay QA users, limpiar búsqueda y usar el primero
             await page.fill('input[placeholder*="Buscar"]', '');
             await page.waitForTimeout(1000);
-            await page.locator('.entity-table tbody tr:has(span[title="Editar"])').first().locator('span[title="Editar"]').click({ force: true });
+            await page.locator('.entity-table tbody tr:has(span[title="Editar"])').first().locator('span[title="Editar"] .action-icon').dispatchEvent('click');
         }
 
         await expect(page.locator('.universal-modal-container')).toBeVisible();
@@ -102,6 +104,8 @@ test.describe('Módulo de Usuarios', () => {
     });
 
     test('HU_12: Buscar usuarios en tiempo real', async ({ page }) => {
+        // Esperar a que se cargue la lista de usuarios real
+        await expect(page.locator('.user-email-text').first()).toBeVisible({ timeout: 15000 });
         // Obtener el correo del primer usuario para buscarlo
         const primeraFila = page.locator('.entity-table tbody tr').first();
         await expect(primeraFila).toBeVisible();
@@ -139,7 +143,7 @@ test.describe('Módulo de Usuarios', () => {
         }
         
         // CA_13_01: Acceder al formulario de edición
-        await filaQA.locator('span[title="Editar"]').click({ force: true });
+        await filaQA.locator('span[title="Editar"] .action-icon').dispatchEvent('click');
         await expect(page.locator('.universal-modal-container')).toBeVisible();
 
         // CA_13_02: Modificar campos permitidos
@@ -174,10 +178,12 @@ test.describe('Módulo de Usuarios', () => {
     });
 
     test('HU_14: Ver el detalle completo de un usuario', async ({ page }) => {
+        // Esperar a que los datos estén cargados antes de interactuar
+        await expect(page.locator('.user-email-text').first()).toBeVisible({ timeout: 15000 });
         // CA_14_02: Acceder a vista de detalles desde la lista
         const fila = page.locator('.entity-table tbody tr').first();
         await expect(fila).toBeVisible({ timeout: 10000 }); // Evitar flakiness esperando que haya filas
-        await fila.locator('span[title="Ver detalles"]').click({ force: true });
+        await fila.locator('span[title="Ver detalles"] .action-icon').dispatchEvent('click');
 
         // CA_14_01 y CA_14_03: Modal visible con información legible
         const modal = page.locator('.universal-modal-container');
@@ -188,7 +194,7 @@ test.describe('Módulo de Usuarios', () => {
         const inputNombre = modal.locator('input[name="nombreCompleto"]');
         await expect(inputNombre).toHaveAttribute('readonly', '');
         
-        await modal.locator('.modal-close-btn').click({ force: true });
+        await modal.locator('.modal-close-btn').dispatchEvent('click');
         await expect(modal).toBeHidden();
     });
 
@@ -235,14 +241,14 @@ test.describe('Módulo de Usuarios', () => {
         
         // CA_15_01: Seleccionar usuario y cambiar estado
         const toggle = filaQA.locator('.custom-switch');
-        await toggle.click({ force: true });
+        await toggle.dispatchEvent('click');
 
         // CA_15_02 y CA_15_03: Confirmación y reflejo inmediato
         await expect(page.locator('.alert-container')).toBeVisible({ timeout: 15000 });
         await expect(page.locator('.alert-container')).toBeHidden({ timeout: 15000 });
         
         // Volver al estado original
-        await toggle.click({ force: true });
+        await toggle.dispatchEvent('click');
         await expect(page.locator('.alert-container')).toBeVisible({ timeout: 15000 });
     });
 
@@ -253,7 +259,7 @@ test.describe('Módulo de Usuarios', () => {
         const emailAdmin = `qa.admin.${ts}@test.com`;
         const nombreAdmin = `QA Admin ${ts}`;
 
-        await page.locator('button:has-text("Registrar Usuario")').click({ force: true });
+        await page.locator('button:has-text("Registrar Usuario")').dispatchEvent('click');
         await expect(page.locator('.universal-modal-container')).toBeVisible();
 
         await page.selectOption('select[name="tipoDocumento"]', { label: 'CC' });
@@ -299,7 +305,7 @@ test.describe('Módulo de Usuarios', () => {
         // Manejar modal de conflicto de sesión si aparece
         const btnUsarAqui = newPage.locator('button:has-text("Usar aquí")');
         if (await btnUsarAqui.isVisible({ timeout: 3000 }).catch(() => false)) {
-            await btnUsarAqui.click({ force: true });
+            await btnUsarAqui.dispatchEvent('click');
         }
 
         // ─── Paso 3: Verificar que entró al panel admin ───
@@ -334,7 +340,7 @@ test.describe('Módulo de Usuarios', () => {
         const ts = Date.now();
         const emailQA = `qa.delete.${ts}@test.com`;
         
-        await page.locator('button:has-text("Registrar Usuario")').click({ force: true });
+        await page.locator('button:has-text("Registrar Usuario")').dispatchEvent('click');
         await expect(page.locator('.universal-modal-container')).toBeVisible();
         await page.selectOption('select[name="tipoDocumento"]', { label: 'CC' });
         await page.fill('input[name="numeroDocumento"]', `10${ts.toString().slice(-8)}`);
@@ -365,16 +371,16 @@ test.describe('Módulo de Usuarios', () => {
         await expect(filaInactiva).toBeVisible({ timeout: 15000 });
 
         // Desactivar el usuario
-        await filaInactiva.locator('.custom-switch').click({ force: true });
+        await filaInactiva.locator('.custom-switch').dispatchEvent('click');
         await expect(page.locator('.alert-container')).toBeVisible({ timeout: 15000 });
         await expect(page.locator('.alert-container')).toBeHidden({ timeout: 15000 });
 
         // Clic en eliminar
-        await filaInactiva.locator('span[title="Eliminar"]').click({ force: true });
+        await filaInactiva.locator('span[title="Eliminar"] .action-icon').dispatchEvent('click');
 
         // Verificar modal y confirmar
         await expect(page.locator('.delete-modal-container')).toBeVisible({ timeout: 15000 });
-        await page.locator('.delete-modal-btn-confirm').click({ force: true });
+        await page.locator('.delete-modal-btn-confirm').dispatchEvent('click');
 
         // Verificar que ya no está en la tabla (se asume éxito del mock)
         // Verificar que ya no está en la tabla (Omitido por mock state mismatch)

@@ -607,8 +607,11 @@ const authController = {
 
             // Si viene excludeUserId y no excludeClienteId, intentar deducir el ID del Cliente correspondiente
             if (excludeUserId && !targetExcludeClienteId) {
-                const exclCliente = await Cliente.findOne({ where: { idUsuario: excludeUserId } });
-                if (exclCliente) targetExcludeClienteId = exclCliente.id;
+                const exclUser = await Usuario.findByPk(excludeUserId);
+                if (exclUser && exclUser.email) {
+                    const exclCliente = await Cliente.findOne({ where: { email: exclUser.email.toLowerCase().trim() } });
+                    if (exclCliente) targetExcludeClienteId = exclCliente.id;
+                }
             }
 
             if (email) {

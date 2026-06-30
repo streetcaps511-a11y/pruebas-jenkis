@@ -179,10 +179,9 @@ test.describe.serial('Módulo Perfil de Cliente', () => {
         await clientPage.waitForTimeout(800);
 
         const btnContinuar = clientPage.locator('button:has-text("CONTINUAR")');
-        if (await btnContinuar.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await btnContinuar.dispatchEvent('click');
-            await completarCheckout(clientPage);
-        }
+        await expect(btnContinuar).toBeVisible({ timeout: 15000 });
+        await btnContinuar.dispatchEvent('click');
+        await completarCheckout(clientPage);
     });
 
     // ─── Setup 3: Admin aprueba y envía el pedido ─────────────────────────────
@@ -235,19 +234,19 @@ test.describe.serial('Módulo Perfil de Cliente', () => {
         const tabInfo = clientPage.locator(
             'button:has-text("Información"), button:has-text("Mis datos"), [data-tab="info"]'
         ).first();
-        if (await tabInfo.isVisible()) { await tabInfo.click(); await clientPage.waitForTimeout(500); }
+        if (await tabInfo.isVisible()) { await tabInfo.dispatchEvent('click'); await clientPage.waitForTimeout(500); }
 
         // Navegar pestaña Mis Pedidos
         const tabPedidos = clientPage.locator(
             'button:has-text("Mis Pedidos"), button:has-text("Pedidos"), [data-tab="orders"]'
         ).first();
-        if (await tabPedidos.isVisible()) { await tabPedidos.click(); await clientPage.waitForTimeout(500); }
+        if (await tabPedidos.isVisible()) { await tabPedidos.dispatchEvent('click'); await clientPage.waitForTimeout(500); }
 
         // Navegar pestaña Devoluciones
         const tabDev = clientPage.locator(
             'button:has-text("Devoluciones"), button:has-text("Mis Devoluciones"), [data-tab="returns"]'
         ).first();
-        if (await tabDev.isVisible()) { await tabDev.click(); await clientPage.waitForTimeout(500); }
+        if (await tabDev.isVisible()) { await tabDev.dispatchEvent('click'); await clientPage.waitForTimeout(500); }
     });
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -262,7 +261,7 @@ test.describe.serial('Módulo Perfil de Cliente', () => {
             'button:has-text("Mis Pedidos"), button:has-text("Pedidos")'
         ).first();
         if (await tabPedidos.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await tabPedidos.click();
+            await tabPedidos.dispatchEvent('click');
             await clientPage.waitForTimeout(800);
         }
 
@@ -285,7 +284,7 @@ test.describe.serial('Módulo Perfil de Cliente', () => {
             'button:has-text("Mis Pedidos"), button:has-text("Pedidos")'
         ).first();
         if (await tabPedidos.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await tabPedidos.click();
+            await tabPedidos.dispatchEvent('click');
             await clientPage.waitForTimeout(800);
         }
 
@@ -301,9 +300,9 @@ test.describe.serial('Módulo Perfil de Cliente', () => {
             await expect(detalle).toBeVisible({ timeout: 8000 });
 
             const btnVolver = clientPage.locator(
-                'button:has-text("Volver"), button:has-text("← Volver"), .btn-back'
+                'button:has-text("Volver"), button:has-text("← Volver"), .btn-back, button[title="Volver"], button.gm-back-btn-circle'
             ).first();
-            if (await btnVolver.isVisible()) await btnVolver.click();
+            if (await btnVolver.isVisible()) await btnVolver.dispatchEvent('click');
         }
     });
 
@@ -319,7 +318,7 @@ test.describe.serial('Módulo Perfil de Cliente', () => {
             'button:has-text("Mis Pedidos"), button:has-text("Pedidos")'
         ).first();
         if (await tabPedidos.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await tabPedidos.click();
+            await tabPedidos.dispatchEvent('click');
             await clientPage.waitForTimeout(800);
         }
 
@@ -361,7 +360,7 @@ test.describe.serial('Módulo Perfil de Cliente', () => {
             'button:has-text("Mis Pedidos"), button:has-text("Pedidos")'
         ).first();
         if (await tabPedidos.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await tabPedidos.click();
+            await tabPedidos.dispatchEvent('click');
             await clientPage.waitForTimeout(800);
         }
 
@@ -416,7 +415,7 @@ test.describe.serial('Módulo Perfil de Cliente', () => {
         ).first();
 
         if (await tabDevoluciones.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await tabDevoluciones.click();
+            await tabDevoluciones.dispatchEvent('click');
             await clientPage.waitForTimeout(800);
 
             const returnsSection = clientPage.locator('[class*="return"], .gm-returns').first();

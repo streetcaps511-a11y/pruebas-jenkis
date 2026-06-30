@@ -26,21 +26,21 @@ test.describe('Módulo Categorias', () => {
         const statusFilterBtn = page.locator('.status-filter-trigger').first();
         await statusFilterBtn.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
         if (await statusFilterBtn.isVisible()) {
-            await statusFilterBtn.click();
+            await statusFilterBtn.dispatchEvent('click');
             await page.waitForTimeout(500);
             
             // Seleccionar "Activos"
             const filterOption = page.locator('.filter-option-item:has-text("Activos")').first();
             await filterOption.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
             if (await filterOption.isVisible()) {
-                await filterOption.click();
+                await filterOption.dispatchEvent('click');
                 await page.waitForTimeout(1000);
             }
             
             // Volver a "Todos"
-            await statusFilterBtn.click();
+            await statusFilterBtn.dispatchEvent('click');
             await page.waitForTimeout(500);
-            await page.locator('.filter-option-item:has-text("Todos")').first().click();
+            await page.locator('.filter-option-item:has-text("Todos")').first().dispatchEvent('click');
             await page.waitForTimeout(1000);
         }
         

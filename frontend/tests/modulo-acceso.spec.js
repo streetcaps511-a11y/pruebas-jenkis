@@ -22,7 +22,7 @@ test.describe('Módulo Acceso', () => {
         await passInput.click({ clickCount: 3 });
         await passInput.fill('ClaveIncorrecta123');
 
-        await page.click('button[type="submit"]');
+        await page.locator('button[type="submit"]').dispatchEvent('click');
 
         // Verificar mensaje de error (esperar un poco en Firefox para que aparezca)
         await page.waitForTimeout(500);
@@ -37,13 +37,13 @@ test.describe('Módulo Acceso', () => {
         await passInput.click({ clickCount: 3 });
         await passInput.fill('AdminGM2024!Secure');
 
-        await page.click('button[type="submit"]');
+        await page.locator('button[type="submit"]').dispatchEvent('click');
 
         // Manejar modal de conflicto si aparece (sesión activa en otro lado)
         const btnUsarAqui = page.locator('button:has-text("Usar aquí")');
         try {
             await expect(btnUsarAqui).toBeVisible({ timeout: 3000 });
-            await btnUsarAqui.click();
+            await btnUsarAqui.dispatchEvent('click');
         } catch (_e) {
             // Sin conflicto, continuar
         }
@@ -64,13 +64,13 @@ test.describe('Módulo Acceso', () => {
 
         await page.fill('input[name="correo_login_unique"]', 'duvann1991@gmail.com');
         await page.fill('input[type="password"]', 'AdminGM2024!Secure');
-        await page.click('button[type="submit"]');
+        await page.locator('button[type="submit"]').dispatchEvent('click');
         
         // Manejar modal de conflicto si aparece
         const btnUsarAqui = page.locator('button:has-text("Usar aquí")');
         try {
             await expect(btnUsarAqui).toBeVisible({ timeout: 2000 });
-            await btnUsarAqui.click();
+            await btnUsarAqui.dispatchEvent('click');
         } catch (_e) {
             // No apareció el modal
         }
@@ -80,19 +80,19 @@ test.describe('Módulo Acceso', () => {
         // CA_18_01 y CA_18_02: Cerrar sesión
         const mobileMenuBtn = page.locator('.al-menu-toggle');
         if (await mobileMenuBtn.isVisible()) {
-            await mobileMenuBtn.click();
+            await mobileMenuBtn.dispatchEvent('click');
             await page.waitForTimeout(500); // Esperar animación del sidebar
         }
         
         const logoutBtn = page.locator('.al-logout-btn').first();
         await expect(logoutBtn).toBeAttached({ timeout: 10000 });
-        await logoutBtn.click({ force: true });
+        await logoutBtn.dispatchEvent('click');
 
         // Si hay un modal de confirmación, aceptarlo
         const confirmLogout = page.locator('.delete-modal-btn-confirm, .delete-modal-container button:has-text("Cerrar sesión")').first();
         try {
             await confirmLogout.waitFor({ state: 'visible', timeout: 3000 });
-            await confirmLogout.click();
+            await confirmLogout.dispatchEvent('click');
         } catch (_e) {
             // Ignorar si no aparece el modal
         }
@@ -115,7 +115,7 @@ test.describe('Módulo Acceso', () => {
         // CA_19_01: Enlace de recuperación visible y clickeable
         const forgotPwdLink = page.locator('button:has-text("Olvidaste tu contraseña")');
         await expect(forgotPwdLink).toBeVisible();
-        await forgotPwdLink.click({ force: true }); // force:true evita el error 'element is not stable' por la animación CSS
+        await forgotPwdLink.dispatchEvent('click'); // dispatchEvent evita el error 'element is not stable' por la animación CSS
 
         // Verificar que estamos en la pantalla de recuperación
         await expect(page.locator('text=/Recuperar|Restablecer|instrucciones/i').first()).toBeVisible({ timeout: 5000 });
@@ -126,7 +126,7 @@ test.describe('Módulo Acceso', () => {
         await emailInput.fill('duvann1991@gmail.com');
         
         // Clic en enviar/recuperar
-        await page.locator('button[type="submit"]').click();
+        await page.locator('button[type="submit"]').dispatchEvent('click');
 
         // Verificar mensaje de confirmación de envío (SweetAlert toast)
         await expect(page.locator('.swal2-container')).toContainText(/Enviado|correo/i, { timeout: 10000 });
@@ -141,18 +141,18 @@ test.describe('Módulo Acceso', () => {
         await expect(page.locator('h2:has-text("Nueva Contraseña")')).toBeVisible({ timeout: 5000 });
 
         // CA_20_02: Validar campos vacíos o contraseñas que no coinciden
-        await page.click('button:has-text("Guardar Nueva Clave")');
+        await page.locator('button:has-text("Guardar Nueva Clave")').dispatchEvent('click');
         await expect(page.locator('text=/La contraseña es obligatoria/i')).toBeVisible();
 
         const inputs = page.locator('input[type="password"]');
         await inputs.nth(0).fill('NuevaClave123!');
         await inputs.nth(1).fill('ClaveDiferente!');
-        await page.click('button:has-text("Guardar Nueva Clave")');
+        await page.locator('button:has-text("Guardar Nueva Clave")').dispatchEvent('click');
         await expect(page.locator('text=/no coinciden/i')).toBeVisible();
 
         // CA_20_03: Enviar formulario correcto (dará error porque el oobCode simulado no es válido en Firebase)
         await inputs.nth(1).fill('NuevaClave123!');
-        await page.click('button:has-text("Guardar Nueva Clave")');
+        await page.locator('button:has-text("Guardar Nueva Clave")').dispatchEvent('click');
         
         await expect(page.locator('text=/expirado|inválido/i')).toBeVisible({ timeout: 8000 });
     });

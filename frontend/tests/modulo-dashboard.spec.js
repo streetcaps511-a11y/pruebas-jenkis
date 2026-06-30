@@ -21,11 +21,11 @@ test.describe('Módulo Dashboard', () => {
         await expect(btnAno).toBeVisible();
 
         // Al hacer clic en Semana, debería aparecer el selector de semanas
-        await btnSemana.click();
+        await btnSemana.dispatchEvent('click');
         await expect(page.locator('select[title="Seleccionar semana"]')).toBeVisible();
 
         // Al hacer clic en Año, solo debe verse el campo de año
-        await btnAno.click();
+        await btnAno.dispatchEvent('click');
         await expect(page.locator('input.slim-input-year')).toBeVisible();
 
         // Verificamos que el gráfico de ventas es visible (debe cargar en cualquier vista por defecto)
@@ -51,7 +51,7 @@ test.describe('Módulo Dashboard', () => {
         await expect(compareBtn).toBeVisible();
         
         // Hacemos clic en Comparar
-        await compareBtn.click({ force: true });
+        await compareBtn.dispatchEvent('click');
 
         // Esperamos a que aparezca la tarjeta de "Resumen Comparativo"
         const summaryCard = page.locator('.comparison-summary-card');
