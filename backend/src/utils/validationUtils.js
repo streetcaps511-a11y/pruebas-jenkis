@@ -205,9 +205,14 @@ export const sanitizeProveedor = (data) => {
 // ============================================
 export const validateCliente = async (data, id = null) => {
     const errors = [];
-    const { nombreCompleto, email, numeroDocumento, telefono } = data;
+    
+    // 🟢 TRADUCTOR DE CAMPOS
+    const nombre = data.nombreCompleto || data.fullName || data.name || data.Name;
+    const email = data.email || data.correo || data.Email;
+    const numeroDoc = data.numeroDocumento || data.documentNumber || data.Documento;
+    const tel = data.telefono || data.phone || data.Telefono;
 
-    if (nombreCompleto !== undefined && (!nombreCompleto || nombreCompleto.trim().length < 3)) {
+    if (nombre !== undefined && (!nombre || nombre.trim().length < 3)) {
         errors.push('El nombre debe tener al menos 3 caracteres');
     }
 
@@ -219,8 +224,8 @@ export const validateCliente = async (data, id = null) => {
         if (existing) errors.push('Ya existe un cliente con ese email');
     }
 
-    if (numeroDocumento !== undefined && numeroDocumento) {
-        const cleanDoc = numeroDocumento.toString().replace(/\D/g, '');
+    if (numeroDoc !== undefined && numeroDoc) {
+        const cleanDoc = numeroDoc.toString().replace(/\D/g, '');
         if (cleanDoc && !isNumeric(cleanDoc)) {
             errors.push('El documento debe contener solo números');
         } else if (cleanDoc) {
@@ -232,8 +237,8 @@ export const validateCliente = async (data, id = null) => {
         }
     }
 
-    if (telefono !== undefined && telefono) {
-        const cleanPhone = telefono.toString().replace(/\D/g, '');
+    if (tel !== undefined && tel) {
+        const cleanPhone = tel.toString().replace(/\D/g, '');
         // Solo validar si tiene contenido y no es una cadena informativa como "No registrado"
         if (cleanPhone) {
             if (!isNumeric(cleanPhone)) errors.push('El teléfono debe contener solo números');
@@ -246,18 +251,32 @@ export const validateCliente = async (data, id = null) => {
 
 export const sanitizeCliente = (data) => {
     const sanitized = {};
+    
+    // 🟢 TRADUCTOR DE CAMPOS
+    const mapeo = {
+        nombreCompleto: data.nombreCompleto || data.fullName || data.name || data.Name,
+        email: data.email || data.correo || data.Email,
+        numeroDocumento: data.numeroDocumento || data.documentNumber || data.Documento,
+        telefono: data.telefono || data.phone || data.Telefono,
+        direccion: data.direccion || data.address || data.Direccion,
+        ciudad: data.ciudad || data.city || data.Ciudad,
+        tipoDocumento: data.tipoDocumento || data.documentType || data.TipoDocumento,
+        idUsuario: data.idUsuario || data.userId,
+        isActive: data.isActive !== undefined ? data.isActive : data.estado !== undefined ? data.estado : true
+    };
+
     const fields = [
         'nombreCompleto', 'email', 'numeroDocumento', 'telefono', 
         'direccion', 'ciudad', 'tipoDocumento', 'idUsuario', 'isActive'
     ];
     fields.forEach(f => {
-        if (data[f] !== undefined) {
-            if (f === 'email') sanitized[f] = data[f].toLowerCase().trim();
-            else if (f === 'isActive') sanitized[f] = !!data[f];
+        if (mapeo[f] !== undefined) {
+            if (f === 'email') sanitized[f] = mapeo[f].toLowerCase().trim();
+            else if (f === 'isActive') sanitized[f] = !!mapeo[f];
             else if (['numeroDocumento', 'telefono'].includes(f)) {
-                sanitized[f] = data[f] ? data[f].toString().replace(/\D/g, '') : null;
+                sanitized[f] = mapeo[f] ? mapeo[f].toString().replace(/\D/g, '') : null;
             }
-            else sanitized[f] = data[f] ? data[f].toString().trim() : null;
+            else sanitized[f] = mapeo[f] ? mapeo[f].toString().trim() : null;
         }
     });
     return sanitized;
