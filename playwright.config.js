@@ -28,7 +28,7 @@ module.exports = defineConfig({
         video: 'retain-on-failure',
         actionTimeout: 30000,
         navigationTimeout: 45000,
-        headless: false,
+        headless: process.env.CI ? true : false,
     },
 
     // ─── PROYECTOS ───────────────────────────────────────────────────────────────

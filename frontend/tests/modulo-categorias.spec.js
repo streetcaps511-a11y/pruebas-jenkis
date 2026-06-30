@@ -66,7 +66,6 @@ test.describe('Módulo Categorias', () => {
         const btnSubmit = page.locator('button[type="submit"]');
         await expect(btnSubmit).toBeEnabled({ timeout: 5000 });
         
-        // ✅ FIX Firefox: Promise.all + dispatchEvent evita el timeout de click
         await Promise.all([
             page.waitForResponse(
                 resp => resp.url().includes('/api/categorias') &&
@@ -74,7 +73,7 @@ test.describe('Módulo Categorias', () => {
                         (resp.status() === 201 || resp.status() === 200),
                 { timeout: 20000 }
             ),
-            btnSubmit.dispatchEvent('click'),
+            btnSubmit.click({ force: true }),
         ]);
         await expect(page.locator('.alert-container').first()).toContainText(/éxito|creada|registrada|guardado/i, { timeout: 10000 });
     });
@@ -92,7 +91,6 @@ test.describe('Módulo Categorias', () => {
             const btnSubmit = page.locator('button[type="submit"]');
             await expect(btnSubmit).toBeEnabled({ timeout: 5000 });
             
-            // ✅ FIX Firefox: Promise.all + dispatchEvent
             await Promise.all([
                 page.waitForResponse(
                     resp => resp.url().includes('/api/categorias') &&
@@ -100,7 +98,7 @@ test.describe('Módulo Categorias', () => {
                             resp.status() === 200,
                     { timeout: 20000 }
                 ),
-                btnSubmit.dispatchEvent('click'),
+                btnSubmit.click({ force: true }),
             ]);
             await expect(page.locator('.alert-container').first()).toContainText(/éxito|actualizada|guardado/i, { timeout: 10000 });
         }
@@ -116,7 +114,6 @@ test.describe('Módulo Categorias', () => {
             
             if (await btnConfirmar.isVisible()) {
                 await page.waitForTimeout(500); // Esperar animación del modal
-                // ✅ FIX Firefox: Promise.all + dispatchEvent
                 await Promise.all([
                     page.waitForResponse(
                         resp => resp.url().includes('/estado') &&
@@ -124,7 +121,7 @@ test.describe('Módulo Categorias', () => {
                                 resp.status() === 200,
                         { timeout: 20000 }
                     ),
-                    btnConfirmar.dispatchEvent('click'),
+                    btnConfirmar.click({ force: true }),
                 ]);
                 await expect(page.locator('.alert-container').first()).toContainText(/éxito|estado/i, { timeout: 10000 });
             }
@@ -151,7 +148,6 @@ test.describe('Módulo Categorias', () => {
             await expect(btnConfirmar).toBeVisible({ timeout: 5000 });
             
             await page.waitForTimeout(500); // Esperar animación del modal
-            // ✅ FIX Firefox: Promise.all + dispatchEvent
             await Promise.all([
                 page.waitForResponse(
                     resp => resp.url().includes('/api/categorias') &&
@@ -159,7 +155,7 @@ test.describe('Módulo Categorias', () => {
                             resp.status() === 200,
                     { timeout: 20000 }
                 ),
-                btnConfirmar.dispatchEvent('click'),
+                btnConfirmar.click({ force: true }),
             ]);
             await expect(page.locator('.alert-container').first()).toContainText(/éxito|eliminad/i, { timeout: 10000 });
         }

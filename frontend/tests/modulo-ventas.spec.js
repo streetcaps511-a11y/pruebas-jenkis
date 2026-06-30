@@ -27,12 +27,13 @@ test.describe('Módulo Ventas', () => {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    nombre: 'Cliente Test Seguro ' + Date.now(),
+                    nombreCompleto: 'Cliente Test Seguro ' + Date.now(),
                     email: 'seguro' + Date.now() + '@test.com',
                     telefono: '3000000000',
-                    identificacion: 'CC' + Date.now(),
+                    tipoDocumento: 'Cédula de Ciudadanía',
+                    numeroDocumento: Math.floor(10000000 + Math.random() * 90000000).toString(),
                     direccion: 'Calle Segura 123',
-                    estado: 'activo'
+                    isActive: true
                 })
             });
 

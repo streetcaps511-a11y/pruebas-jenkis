@@ -14,9 +14,7 @@ pipeline {
         stage('Install Playwright') {
             steps {
                 bat 'npm install'
-                bat 'npx playwright install chromium'
-                bat 'npx playwright install firefox'
-                bat 'npx playwright install webkit'
+                bat 'npx playwright install'
             }
         }
         stage('Test') {

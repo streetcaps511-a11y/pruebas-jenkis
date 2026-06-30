@@ -207,9 +207,9 @@ export const validateCliente = async (data, id = null) => {
     const errors = [];
     
     // 🟢 TRADUCTOR DE CAMPOS
-    const nombre = data.nombreCompleto || data.fullName || data.name || data.Name;
+    const nombre = data.nombreCompleto || data.fullName || data.name || data.Name || data.nombre;
     const email = data.email || data.correo || data.Email;
-    const numeroDoc = data.numeroDocumento || data.documentNumber || data.Documento;
+    const numeroDoc = data.numeroDocumento || data.documentNumber || data.Documento || data.identificacion || data.documento;
     const tel = data.telefono || data.phone || data.Telefono;
 
     if (nombre !== undefined && (!nombre || nombre.trim().length < 3)) {
@@ -254,15 +254,15 @@ export const sanitizeCliente = (data) => {
     
     // 🟢 TRADUCTOR DE CAMPOS
     const mapeo = {
-        nombreCompleto: data.nombreCompleto || data.fullName || data.name || data.Name,
+        nombreCompleto: data.nombreCompleto || data.fullName || data.name || data.Name || data.nombre,
         email: data.email || data.correo || data.Email,
-        numeroDocumento: data.numeroDocumento || data.documentNumber || data.Documento,
+        numeroDocumento: data.numeroDocumento || data.documentNumber || data.Documento || data.identificacion || data.documento,
         telefono: data.telefono || data.phone || data.Telefono,
         direccion: data.direccion || data.address || data.Direccion,
         ciudad: data.ciudad || data.city || data.Ciudad,
-        tipoDocumento: data.tipoDocumento || data.documentType || data.TipoDocumento,
+        tipoDocumento: data.tipoDocumento || data.documentType || data.TipoDocumento || data.tipoDoc || 'Cédula de Ciudadanía',
         idUsuario: data.idUsuario || data.userId,
-        isActive: data.isActive !== undefined ? data.isActive : data.estado !== undefined ? data.estado : true
+        isActive: data.isActive !== undefined ? data.isActive : (data.estado !== undefined ? (data.estado === 'activo' || data.estado === true) : true)
     };
 
     const fields = [

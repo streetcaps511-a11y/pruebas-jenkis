@@ -302,10 +302,18 @@ test.describe('Módulo de Usuarios', () => {
             newPage.click('button[type="submit"]', { force: true })
         ]);
 
-        // Manejar modal de conflicto de sesión si aparece
-        const btnUsarAqui = newPage.locator('button:has-text("Usar aquí")');
-        if (await btnUsarAqui.isVisible({ timeout: 3000 }).catch(() => false)) {
-            await btnUsarAqui.dispatchEvent('click');
+        // Esperar a que ocurra una de dos cosas:
+        // 1. Redirección exitosa a /admin o /dashboard
+        // 2. Aparición del botón "Usar aquí" de conflicto de sesión
+        await Promise.race([
+            newPage.waitForURL(url => url.pathname.startsWith('/admin') || url.pathname.startsWith('/dashboard'), { timeout: 20000 }),
+            newPage.locator('button:has-text("Usar aquí")').waitFor({ state: 'visible', timeout: 20000 })
+        ]).catch(() => {});
+
+        // Si apareció el botón de conflicto, hacer clic y esperar de nuevo a la redirección
+        if (await newPage.locator('button:has-text("Usar aquí")').isVisible()) {
+            await newPage.locator('button:has-text("Usar aquí")').click({ force: true });
+            await newPage.waitForURL(url => url.pathname.startsWith('/admin') || url.pathname.startsWith('/dashboard'), { timeout: 20000 });
         }
 
         // ─── Paso 3: Verificar que entró al panel admin ───

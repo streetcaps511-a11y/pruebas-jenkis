@@ -39,18 +39,20 @@ test.describe('Módulo Acceso', () => {
 
         await page.locator('button[type="submit"]').click({ force: true });
 
-        // Manejar modal de conflicto si aparece (sesión activa en otro lado)
-        const btnUsarAqui = page.locator('button:has-text("Usar aquí")');
-        try {
-            await expect(btnUsarAqui).toBeVisible({ timeout: 3000 });
-            await btnUsarAqui.click({ force: true });
-        } catch (_e) {
-            // Sin conflicto, continuar
+        // Esperar a que ocurra una de dos cosas:
+        // 1. Redirección exitosa a /admin
+        // 2. Aparición del botón "Usar aquí" de conflicto de sesión
+        await Promise.race([
+            page.waitForURL(url => url.pathname.startsWith('/admin'), { timeout: 20000 }),
+            page.locator('button:has-text("Usar aquí")').waitFor({ state: 'visible', timeout: 20000 })
+        ]).catch(() => {});
+
+        // Si apareció el botón de conflicto, hacer clic y esperar de nuevo a la redirección
+        if (await page.locator('button:has-text("Usar aquí")').isVisible()) {
+            await page.locator('button:has-text("Usar aquí")').click({ force: true });
+            await page.waitForURL(url => url.pathname.startsWith('/admin'), { timeout: 20000 });
         }
 
-        // Esperar redirección — Firefox puede ir a /admin/dashboard o /admin
-        // Usamos waitForURL flexible en lugar de glob que falla en Firefox
-        await page.waitForURL(url => url.pathname.startsWith('/admin'), { timeout: 20000 });
         expect(page.url()).toContain('/admin');
     });
 
@@ -66,16 +68,19 @@ test.describe('Módulo Acceso', () => {
         await page.fill('input[type="password"]', 'AdminGM2024!Secure');
         await page.locator('button[type="submit"]').click({ force: true });
         
-        // Manejar modal de conflicto si aparece
-        const btnUsarAqui = page.locator('button:has-text("Usar aquí")');
-        try {
-            await expect(btnUsarAqui).toBeVisible({ timeout: 2000 });
-            await btnUsarAqui.click({ force: true });
-        } catch (_e) {
-            // No apareció el modal
-        }
+        // Esperar a que ocurra una de dos cosas:
+        // 1. Redirección exitosa a /admin
+        // 2. Aparición del botón "Usar aquí" de conflicto de sesión
+        await Promise.race([
+            page.waitForURL('**/admin**', { timeout: 15000 }),
+            page.locator('button:has-text("Usar aquí")').waitFor({ state: 'visible', timeout: 15000 })
+        ]).catch(() => {});
 
-        await page.waitForURL('**/admin**', { timeout: 15000 });
+        // Si apareció el botón de conflicto, hacer clic y esperar de nuevo a la redirección
+        if (await page.locator('button:has-text("Usar aquí")').isVisible()) {
+            await page.locator('button:has-text("Usar aquí")').click({ force: true });
+            await page.waitForURL('**/admin**', { timeout: 15000 });
+        }
 
         // CA_18_01 y CA_18_02: Cerrar sesión
         const mobileMenuBtn = page.locator('.al-menu-toggle');
