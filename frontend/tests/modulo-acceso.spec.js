@@ -9,7 +9,7 @@ test.describe('Módulo Acceso', () => {
         // Navegar a la página de inicio de sesión
         await page.goto('http://localhost:5173/login');
         await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(300); // Esperar animaciones iniciales (Firefox es más lento)
+        await page.waitForTimeout(500); // Esperar animaciones iniciales y el useEffect de limpieza (100ms)
 
         // ── CA_17_02: Credenciales inválidas ──────────────────────────────
         // Firefox requiere triple-click para seleccionar el campo antes de escribir
@@ -62,7 +62,7 @@ test.describe('Módulo Acceso', () => {
         // Pre-condición: Iniciar sesión primero
         await page.goto('http://localhost:5173/login');
         await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(200); // Esperar a que el useEffect de limpieza (100ms) termine
+        await page.waitForTimeout(500); // Esperar a que el useEffect de limpieza (100ms) termine
 
         await page.fill('input[name="correo_login_unique"]', 'duvann1991@gmail.com');
         await page.fill('input[type="password"]', 'AdminGM2024!Secure');
@@ -115,7 +115,7 @@ test.describe('Módulo Acceso', () => {
     test('HU_19: Recuperar contraseña', async ({ page }) => {
         await page.goto('http://localhost:5173/login');
         await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(200); // Esperar a que el useEffect de limpieza (100ms) termine
+        await page.waitForTimeout(500); // Esperar a que el useEffect de limpieza (100ms) termine
         
         // CA_19_01: Enlace de recuperación visible y clickeable
         const forgotPwdLink = page.locator('button:has-text("Olvidaste tu contraseña")');

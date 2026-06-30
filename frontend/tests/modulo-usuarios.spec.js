@@ -293,6 +293,7 @@ test.describe('Módulo de Usuarios', () => {
 
         await newPage.goto('http://localhost:5173/login');
         await newPage.waitForLoadState('networkidle');
+        await newPage.waitForTimeout(500); // Esperar a que el useEffect de limpieza (100ms) en Login.jsx se ejecute
 
         // La contraseña por defecto es el número de documento
         await newPage.fill('input[name="correo_login_unique"]', emailAdmin);
